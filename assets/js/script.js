@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timestamp = new Date().toLocaleTimeString();
         const line = document.createElement('div');
         line.innerHTML = `<span style="color: #666">[${timestamp}]</span> ${text}`;
+        line.style.textAlign = 'left';
         TERMINAL.display.appendChild(line);
         TERMINAL.display.scrollTop = TERMINAL.display.scrollHeight;
     }
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     TEXT_RENDERER.targets.forEach(target => {
+        target.style.textAlign = 'left';
         const originalData = target.innerText;
         target.innerText = '';
         let dataIndex = 0;
@@ -130,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         AUDIO_PROTOCOL.volume = 0.05;
         
         TEXT_RENDERER.targets.forEach(target => {
+            target.style.textAlign = 'left';
             const data = target.innerText;
             target.innerText = '';
             let index = 0;
