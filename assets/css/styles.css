@@ -20,12 +20,12 @@
 
 body {
     margin: 0;
-    padding: 20px;
+    padding: 0;
     background-color: #000000;
     color: #ffffff;
     font-family: 'VT323', monospace;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
@@ -53,10 +53,11 @@ body::before {
 .terminal {
     background-color: #000000;
     border: 1px solid #333333;
-    width: 60%;
+    width: 100vw;
+    height: 100vh;
     max-width: none;
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
-    margin: 20px 40px;
+    margin: 0;
     position: relative;
 }
 
@@ -93,7 +94,7 @@ body::before {
 
 .terminal-body {
     padding: 20px;
-    height: 600px;
+    height: calc(100vh - 40px);
     overflow-y: auto;
     background-color: #000000;
     position: relative;
@@ -188,13 +189,13 @@ body::before {
 
 @media (max-width: 600px) {
     .terminal {
-        width: 90%;
-        margin: 20px auto;
+        width: 100vw;
+        margin: 0;
     }
 
     .terminal-body {
         padding: 15px;
-        height: 400px;
+        height: calc(100vh - 30px);
     }
 
     .title {
