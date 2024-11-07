@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter {{chapterNumber}} - {{chapterTitle}}</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <span class="terminal-title">Terminal</span>
+        </div>
+        <div class="terminal-body">
+            <div class="output">
+                <h1 class="title" data-text="Chapter {{chapterNumber}}: {{chapterTitle}}">Chapter {{chapterNumber}}: {{chapterTitle}}</h1>
+                <p class="chapter-text">
+                    {{chapterContent}}
+                </p>
+            </div>
+            <div class="input-line">
+                <span class="prompt">user@dystopia:~$</span>
+                <input type="text" id="command-input" autofocus />
+            </div>
+        </div>
+    </div>
+    <!-- Optional: Typing sound effect -->
+    <!-- <audio id="typing-sound" src="assets/sounds/typing.mp3" preload="auto"></audio> -->
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
