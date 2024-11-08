@@ -54,6 +54,11 @@
     100% { transform: translateY(100vh); }
 }
 
+@keyframes reveal {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -190,6 +195,8 @@ body::after {
     display: flex;
     justify-content: center;
     gap: 1rem;
+    opacity: 0;
+    animation: reveal 1s ease-in-out 5s forwards;
 }
 
 .nav-button {
