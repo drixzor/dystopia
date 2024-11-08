@@ -8,7 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
             'WARNING: Connection unstable',
             'BOOT: Neural interface active',
             'BOOT: Reality filters engaged',
-            'Terminal ready. Welcome to the truth.'
+            'Terminal ready. Welcome to the truth.',
+            'HINT: Progress lies ahead...',
+            'HINT: To advance, one must know the way forward...',
+            '... CONNECTION ESTABLISHED ...'
+        ],
+        hints: [
+            'The path forward lies in progression...',
+            'To advance, one must take the ____ step',
+            'What comes after now? The ____ moment',
+            'Moving forward requires the right command',
+            'The future lies ahead, in what comes ____',
+            'Progress demands we look to what\'s ____',
+            'After present comes...'
         ],
         glitchChars: '!@#$%^&*[]{}|;:,.<>?/~αβγδεζηθικλμνξπρστυφχψω',
         transitionMessages: [
@@ -24,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Utility functions
     const getRandomItem = (array) => array[Math.floor(Math.random() * array.length)];
+    
     const createGlitchText = (text, intensity = 0.9) => {
         return text.split('').map(char => 
             Math.random() > intensity ? 
@@ -123,9 +136,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return currentChapter <= 1 ? 'index.html' : `chapter${currentChapter - 1}.html`;
     }
 
+    function showRandomHint() {
+        if (!TERMINAL.display) return;
+        const hint = getRandomItem(TERMINAL.hints);
+        appendOutput('[SYSTEM] ' + hint, '#0F0');
+    }
+
     // Command system
     const COMMANDS = {
-        'help': '[SYS] Available commands: help | next | prev | home | clear | status',
+        'help': () => {
+            appendOutput('[SYSTEM] To progress is to move forward...', '#0F0');
+            setTimeout(showRandomHint, 1000);
+        },
         'next': () => {
             appendOutput('[NAV] Initiating neural pathway shift...');
             transitionToChapter(getNextChapterUrl());
@@ -166,6 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Command input handling
     if (TERMINAL.input) {
+        let incorrectAttempts = 0;
+        
         TERMINAL.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const cmd = TERMINAL.input.value.trim().toLowerCase();
@@ -176,12 +200,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         ? COMMANDS[cmd]() 
                         : appendOutput(COMMANDS[cmd]);
                 } else {
-                    appendOutput(`[ERROR] Invalid command: ${cmd}`, '#F00');
-                    appendOutput('[ERROR] Type "help" for available commands', '#F00');
+                    incorrectAttempts++;
+                    if (incorrectAttempts >= 3) {
+                        appendOutput('[HINT] The future beckons... What comes next?', '#FFA500');
+                        incorrectAttempts = 0;
+                    } else {
+                        const responses = [
+                            'Not quite. Think about progression...',
+                            'Close, but how does one move forward?',
+                            'Almost there. What comes after now?',
+                            'Think ahead. What\'s the next step?'
+                        ];
+                        appendOutput(`[ERROR] ${getRandomItem(responses)}`, '#FFA500');
+                    }
                 }
                 TERMINAL.input.value = '';
             }
         });
+
+        // Show periodic hints
+        setInterval(showRandomHint, 20000);
     }
 
     // Initialize nav buttons
@@ -229,18 +267,29 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initialize
-    handleInitialPage();
-    setupNavButtons();
-    renderText();
-    
-    // Run boot sequence if we have a terminal display
-    if (TERMINAL.display) {
-        TERMINAL.bootSequence.forEach((msg, i) => {
-            setTimeout(() => {
-                const glitchedMsg = createGlitchText(msg);
-                appendOutput(glitchedMsg, '#0F0');
-                setTimeout(() => appendOutput(msg, '#0F0'), 100);
-            }, i * 400);
-        });
+    function init() {
+        handleInitialPage();
+        setupNavButtons();
+        renderText();
+        
+        if (TERMINAL.display) {
+            TERMINAL.bootSequence.forEach((msg, i) => {
+                setTimeout(() => {
+                    const glitchedMsg = createGlitchText(msg);
+                    appendOutput(glitchedMsg, '#0F0');
+                    setTimeout(() => appendOutput(msg, '#0F0'), 100);
+                    
+                    if (i === TERMINAL.bootSequence.length - 1) {
+                        setTimeout(() => {
+                            appendOutput('[SYSTEM] To continue your journey, you must progress...', '#0F0');
+                            showRandomHint();
+                        }, 1000);
+                    }
+                }, i * 400);
+            });
+        }
     }
+
+    // Start the system
+    init();
 });
