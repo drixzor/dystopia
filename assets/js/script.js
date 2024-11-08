@@ -1,157 +1,246 @@
-// assets/js/script.js
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Terminal Interface v2.7.3 [CLASSIFIED]
-    console.log('%c[SYSTEM] Terminal Interface v2.7.3 initialized', 'color: #0f0');
-    console.log('%c[WARNING] Unauthorized access will be traced and reported', 'color: #f00');
-
     const TERMINAL = {
         input: document.getElementById('command-input'),
         display: document.querySelector('.output'),
         prompt: 'user@dystopia:~$ ',
         bootSequence: [
-            'Initializing memory banks...',
-            'Loading command protocols...',
-            'Establishing secure connection...',
-            'Terminal ready.'
+            'BOOT: Systems check...',
+            'WARNING: Connection unstable',
+            'BOOT: Neural interface active',
+            'BOOT: Reality filters engaged',
+            'Terminal ready. Welcome to the truth.'
+        ],
+        glitchChars: '!@#$%^&*[]{}|;:,.<>?/~αβγδεζηθικλμνξπρστυφχψω',
+        transitionMessages: [
+            'REDIRECTING NEURAL PATHWAY',
+            'LOADING NEXT MEMORY FRAGMENT',
+            'ESTABLISHING CONNECTION',
+            'ACCESSING DATA STREAM',
+            'REALITY SHIFT IN PROGRESS',
+            'DISSOLVING CURRENT INSTANCE',
+            'QUANTUM TUNNEL ENGAGED'
         ]
     };
 
-    // Execute boot sequence
-    TERMINAL.bootSequence.forEach((msg, i) => {
-        setTimeout(() => appendOutput(`[BOOT] ${msg}`), i * 500);
-    });
-
-    // Command Protocol Database
-    const COMMAND_PROTOCOLS = {
-        'help': '[SYS] Available protocols: help | next | home | chapters | clear',
-        'next': () => {
-            appendOutput('[NAV] Initiating chapter transition...');
-            setTimeout(() => window.location.href = 'chapter2.html', 800);
-        },
-        'home': () => {
-            appendOutput('[NAV] Returning to root directory...');
-            setTimeout(() => window.location.href = 'index.html', 800);
-        },
-        'clear': () => {
-            TERMINAL.display.innerHTML = '';
-            appendOutput('[SYS] Terminal buffer cleared');
-        },
-        'chapters': '[DATA] Archive contents:\n' +
-                    '├── Chapter_01: Illusion_of_Choice.dat\n' +
-                    '├── Chapter_02: [ENCRYPTED]\n' +
-                    '└── Additional_chapters: [RESTRICTED_ACCESS]'
+    // Utility functions
+    const getRandomItem = (array) => array[Math.floor(Math.random() * array.length)];
+    const createGlitchText = (text, intensity = 0.9) => {
+        return text.split('').map(char => 
+            Math.random() > intensity ? 
+            getRandomItem(TERMINAL.glitchChars) : 
+            char
+        ).join('');
     };
 
-    TERMINAL.input?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const cmd = TERMINAL.input.value.trim().toLowerCase();
-            appendOutput(`${TERMINAL.prompt}${cmd}`);
-            
-            if (COMMAND_PROTOCOLS[cmd]) {
-                if (typeof COMMAND_PROTOCOLS[cmd] === 'function') {
-                    COMMAND_PROTOCOLS[cmd]();
-                } else {
-                    appendOutput(COMMAND_PROTOCOLS[cmd]);
-                }
-            } else {
-                appendOutput(`[ERROR] Invalid protocol: ${cmd}`);
-                appendOutput('[ERROR] Type "help" for available protocols');
-            }
-            TERMINAL.input.value = '';
-        }
-    });
+    // Create transition overlay
+    function createTransitionOverlay() {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            zIndex: '1000',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontFamily: 'VT323, monospace',
+            fontSize: '2em',
+            color: '#0F0',
+            opacity: '0',
+            transition: 'opacity 0.3s ease',
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
+        });
+        document.body.appendChild(overlay);
+        return overlay;
+    }
 
-    function appendOutput(text) {
+    // Handle initial page setup
+    function handleInitialPage() {
+        const isInitialPage = !document.querySelector('.container');
+        if (isInitialPage) {
+            document.addEventListener('keydown', (e) => {
+                const key = e.key.toLowerCase();
+                if (key === 'y') {
+                    transitionToChapter('chapter1.html');
+                }
+            });
+        }
+    }
+
+    // Enhanced transition effect
+    function transitionToChapter(url) {
+        const container = document.querySelector('.container') || document.querySelector('.terminal');
+        const overlay = createTransitionOverlay();
+        let currentMsg = getRandomItem(TERMINAL.transitionMessages);
+        
+        container.style.transition = 'all 0.3s ease';
+        container.style.opacity = '0';
+        container.style.transform = 'scale(0.97)';
+        
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            overlay.textContent = currentMsg;
+            
+            let glitchCount = 0;
+            const glitchEffect = setInterval(() => {
+                container.style.transform = `scale(0.97) translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+                overlay.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+                
+                if (Math.random() > 0.7) {
+                    overlay.textContent = createGlitchText(currentMsg, 0.8);
+                    setTimeout(() => {
+                        overlay.textContent = currentMsg;
+                    }, 50);
+                }
+                
+                glitchCount++;
+                if (glitchCount > 10) {
+                    clearInterval(glitchEffect);
+                    window.location.href = url;
+                }
+            }, 100);
+        }, 300);
+    }
+
+    // Navigation handling
+    function getCurrentChapter() {
+        const path = window.location.pathname;
+        const match = path.match(/chapter(\d+)\.html/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    function getNextChapterUrl() {
+        const currentChapter = getCurrentChapter();
+        return currentChapter === 0 ? 'chapter1.html' : `chapter${currentChapter + 1}.html`;
+    }
+
+    function getPreviousChapterUrl() {
+        const currentChapter = getCurrentChapter();
+        return currentChapter <= 1 ? 'index.html' : `chapter${currentChapter - 1}.html`;
+    }
+
+    // Command system
+    const COMMANDS = {
+        'help': '[SYS] Available commands: help | next | prev | home | clear | status',
+        'next': () => {
+            appendOutput('[NAV] Initiating neural pathway shift...');
+            transitionToChapter(getNextChapterUrl());
+        },
+        'prev': () => {
+            appendOutput('[NAV] Reverting to previous memory state...');
+            transitionToChapter(getPreviousChapterUrl());
+        },
+        'home': () => {
+            appendOutput('[NAV] Emergency return protocol initiated...');
+            transitionToChapter('index.html');
+        },
+        'clear': () => {
+            if (TERMINAL.display) {
+                TERMINAL.display.innerHTML = '';
+                appendOutput('[SYS] Terminal buffer purged');
+            }
+        },
+        'status': () => {
+            appendOutput('[STATUS] System Diagnostics:');
+            appendOutput('├── Neural Interface: ACTIVE');
+            appendOutput('├── Reality Filters: ENGAGED');
+            appendOutput('├── Memory Banks: ONLINE');
+            appendOutput('└── Connection Status: UNSTABLE');
+        }
+    };
+
+    // Terminal output
+    function appendOutput(text, color = '#ccc') {
+        if (!TERMINAL.display) return;
         const timestamp = new Date().toLocaleTimeString();
         const line = document.createElement('div');
-        line.innerHTML = `<span style="color: #666">[${timestamp}]</span> ${text}`;
+        line.innerHTML = `<span style="color: #666">[${timestamp}]</span> <span style="color: ${color}">${text}</span>`;
         line.style.textAlign = 'left';
         TERMINAL.display.appendChild(line);
         TERMINAL.display.scrollTop = TERMINAL.display.scrollHeight;
     }
 
-    // Advanced Text Rendering Protocol with Corruption Simulation
-    const TEXT_RENDERER = {
-        targets: document.querySelectorAll('.chapter-text, .intro'),
-        baseLatency: 10, // Reduced from 20 for faster typing
-        corruptionChars: '@#$%&*░▒▓█╔╗╚╝║═╣╠╬│┌┐└┘├┤┬┴┼'.split(''),
-        noiseThreshold: 0.15,
-        delayProbability: 0.01,
-        cursorChar: '|'
-    };
-
-    TEXT_RENDERER.targets.forEach(target => {
-        target.style.textAlign = 'left';
-        const originalData = target.innerText;
-        target.innerText = '';
-        let dataIndex = 0;
-
-        function simulateCorruption() {
-            const corruptedData = target.innerText.split('');
-            const corruptionPoint = Math.floor(Math.random() * corruptedData.length);
-            corruptedData[corruptionPoint] = TEXT_RENDERER.corruptionChars[
-                Math.floor(Math.random() * TEXT_RENDERER.corruptionChars.length)
-            ];
-            target.innerText = corruptedData.join('');
-
-            setTimeout(() => {
-                target.innerText = originalData.substring(0, dataIndex) + TEXT_RENDERER.cursorChar;
-            }, 100);
-        }
-
-        function renderText() {
-            if (dataIndex < originalData.length) {
-                const latencyVariation = Math.random() * 50; // Reduced from 100 for more consistent speed
-                const currentLatency = TEXT_RENDERER.baseLatency + latencyVariation;
-
-                target.innerText = originalData.substring(0, dataIndex) + TEXT_RENDERER.cursorChar;
-                dataIndex++;
-
-                if (Math.random() < TEXT_RENDERER.noiseThreshold) {
-                    simulateCorruption();
-                }
-
-                if (Math.random() < TEXT_RENDERER.delayProbability) {
-                    setTimeout(renderText, currentLatency + 500); // Reduced from 1000
+    // Command input handling
+    if (TERMINAL.input) {
+        TERMINAL.input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = TERMINAL.input.value.trim().toLowerCase();
+                appendOutput(`${TERMINAL.prompt}${cmd}`, '#0F0');
+                
+                if (COMMANDS[cmd]) {
+                    typeof COMMANDS[cmd] === 'function' 
+                        ? COMMANDS[cmd]() 
+                        : appendOutput(COMMANDS[cmd]);
                 } else {
-                    setTimeout(renderText, currentLatency);
+                    appendOutput(`[ERROR] Invalid command: ${cmd}`, '#F00');
+                    appendOutput('[ERROR] Type "help" for available commands', '#F00');
                 }
-            } else {
-                // Remove cursor at the end
-                target.innerText = originalData;
+                TERMINAL.input.value = '';
             }
-        }
+        });
+    }
 
-        renderText();
-    });
+    // Initialize nav buttons
+    function setupNavButtons() {
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (button.hasAttribute('href')) {
+                    transitionToChapter(button.getAttribute('href'));
+                } else {
+                    const type = button.textContent.toLowerCase().includes('previous') ? 'prev' : 'next';
+                    COMMANDS[type]();
+                }
+            });
+        });
+    }
 
-    // Audio Feedback Protocol
-    const AUDIO_PROTOCOL = document.getElementById('typing-sound');
-    if (AUDIO_PROTOCOL) {
-        AUDIO_PROTOCOL.volume = 0.05;
-        
-        TEXT_RENDERER.targets.forEach(target => {
+    // Text rendering
+    const renderText = () => {
+        document.querySelectorAll('.chapter-text, .intro').forEach(target => {
+            const text = target.innerText;
             target.style.textAlign = 'left';
-            const data = target.innerText;
-            target.innerText = '';
+            target.innerHTML = '';
+            
             let index = 0;
-
-            function renderWithAudio() {
-                if (index < data.length) {
-                    target.innerText = data.substring(0, index) + TEXT_RENDERER.cursorChar;
-                    if (Math.random() < 0.7) {
-                        AUDIO_PROTOCOL.currentTime = 0;
-                        AUDIO_PROTOCOL.play();
+            const interval = setInterval(() => {
+                if (index <= text.length) {
+                    if (Math.random() > 0.95) {
+                        target.innerHTML = text.substring(0, index) + 
+                            getRandomItem(TERMINAL.glitchChars) +
+                            '█';
+                        setTimeout(() => {
+                            target.innerHTML = text.substring(0, index) + '█';
+                        }, 50);
+                    } else {
+                        target.innerHTML = text.substring(0, index) + '█';
                     }
                     index++;
-                    setTimeout(renderWithAudio, TEXT_RENDERER.baseLatency + Math.random() * 50); // Reduced from 100
                 } else {
-                    target.innerText = data;
+                    clearInterval(interval);
+                    target.innerHTML = text;
                 }
-            }
+            }, 20);
+        });
+    };
 
-            renderWithAudio();
+    // Initialize
+    handleInitialPage();
+    setupNavButtons();
+    renderText();
+    
+    // Run boot sequence if we have a terminal display
+    if (TERMINAL.display) {
+        TERMINAL.bootSequence.forEach((msg, i) => {
+            setTimeout(() => {
+                const glitchedMsg = createGlitchText(msg);
+                appendOutput(glitchedMsg, '#0F0');
+                setTimeout(() => appendOutput(msg, '#0F0'), 100);
+            }, i * 400);
         });
     }
 });
